@@ -22,7 +22,5 @@ include_directories("${PYTHIA8_INCLUDE_DIR}")
 add_subdirectory(analysis)
 
 add_executable(hsim main.cc)
-target_link_libraries(hsim "${PYTHIA8_LIBRARIES}")
-target_link_libraries(hsim "${ROOT_LIBRARIES}")
-
+target_link_libraries(hsim "${PYTHIA8_LIBRARIES}" "${ROOT_LIBRARIES}")
 target_link_libraries(hsim analysis)

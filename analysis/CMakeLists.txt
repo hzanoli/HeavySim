@@ -7,4 +7,4 @@ add_library(analysis SHARED
             filter.cc
             )
 
-link_libraries(analysis ${ROOT_LIBRARIES})
+target_link_libraries(analysis "${PYTHIA8_LIBRARIES}" "${ROOT_LIBRARIES}")
