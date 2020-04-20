@@ -18,7 +18,6 @@ mkdir HeavySim
 cd HeavySim
 mkdir build
 mkdir src
-
 ```
 
 
@@ -44,13 +43,16 @@ If you have installed **ROOT and PYTHIA8 using aliBuild**, they will be find aut
 ```bash
 cmake ../src/HeavySim/ .
 ```
-If you did **not use aliBuild to install ROOT and PYTHIA8** (very likely if you got a error message in the previous step), run CMake and tell it where PYTHIA8 is:
+If you did **not use aliBuild to install ROOT and PYTHIA8** (very likely if you got a error message in the previous step), run CMake and tell it where PYTHIA8 is (do not include the <>):
 
 ```bash
 cmake ../src/HeavySim/ . -DPYTHIA8=<full path to PYTHIA8>
 ```
 
-Now you can build the software. 
+For example, if my PYTHIA8 is installed under /Users/hzanoli/pythia, I will run ``cmake ../src/HeavySim/ . 
+-DPYTHIA8=/Users/hzanoli/pythia/``
+
+Now you can build the software. That is very easy using *make*.
 
 > Tip: you likely have more than one core in your computer. You can use all of them to compile the code faster!
 

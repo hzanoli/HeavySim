@@ -1,0 +1,12 @@
+#ifndef HEAVYSIM_TREE_ANALYSIS_TASK_H_
+#define HEAVYSIM_TREE_ANALYSIS_TASK_H_
+
+
+
+class BaseTask {
+
+};
+
+
+
+#endif  // HEAVYSIM_TREE_ANALYSIS_TASK_H_

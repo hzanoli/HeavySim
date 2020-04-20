@@ -1,4 +1,4 @@
-#include "filter.h"
+#include "funcional_filter.h"
 #include <vector>
 #include "Pythia8/Pythia.h"
 
@@ -11,7 +11,7 @@ std::vector<int> FilterKinematics(const Pythia8::Event& event, double eta_max) {
   filtered_particles.reserve(event.size());
 
   for (int i = 0; i < event.size(); ++i) {
-    auto& particle = event[i];
+    const auto& particle = event[i];
     if (fabs(particle.eta()) > eta_max) continue;
 
     filtered_particles.push_back(i);
@@ -27,8 +27,8 @@ std::vector<int> FilterParticles(const Pythia8::Event& event,
   std::vector<int> filtered_particles;
   filtered_particles.reserve(particles.size());
 
-  for (auto& i : particles) {
-    auto particle = event[i];
+  for (auto i : particles) {
+    const auto& particle = event[i];
     if (IsInVector(int(particle.idAbs()), particle_ids)) {
       filtered_particles.push_back(i);
     }
@@ -37,6 +37,8 @@ std::vector<int> FilterParticles(const Pythia8::Event& event,
   filtered_particles.shrink_to_fit();
   return filtered_particles;
 }
+
+
 
 }  // namespace filter
 

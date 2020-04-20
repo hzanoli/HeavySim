@@ -1,13 +1,7 @@
-#include "reduced_event.h"
+#include "pythia_event_utils.h"
 #include "Pythia8/Pythia.h"
 
 namespace analysis {
-ReducedEvent::ReducedEvent(const Pythia8::Event& event,
-                           std::vector<ReducedParticle>& particles_to_save) {
-  process_ = ClassifyHFProcess(event);
-  particles_ = particles_to_save;
-}
-
 
 int ClassifyHFProcess(Pythia8::Event event) {
   int process = 0;
@@ -24,4 +18,4 @@ int ClassifyHFProcess(Pythia8::Event event) {
   return process;
 }
 
-}  // namespace analysis
+}

@@ -9,20 +9,26 @@
 #include "TFile.h"
 #include "TTree.h"
 
-#include "analysis/filter.h"
-#include "analysis/reduced_event.h"
-#include "analysis/reduced_particle.h"
+#include "analysis/funcional_filter.h"
+#include "container/reduced_event.h"
+#include "container/reduced_particle.h"
+#include "pythia_event_utils.h"
+#include "pythia_particle_utils.h"
 
 namespace filter = analysis::filter;
 
 int main(int argc, char** argv);
 
+/* Reads the arguments given to the program and sets the values of the seed,
+ * number of events and tune.
+ */
 void ConfigureFromInput(std::vector<std::string> arguments, int& seed,
                         int& n_events, int& tune);
 
 int main(int argc, char** argv) {
   // Configuring the settings of the program: Seed, number of events and pythia
   std::vector<std::string> arguments(argv + 1, argv + argc);
+
   int seed, n_events, tune;
   ConfigureFromInput(arguments, seed, n_events, tune);
 
@@ -30,50 +36,54 @@ int main(int argc, char** argv) {
   std::cout << "Setting Number of events to " << n_events << std::endl;
   std::cout << "Setting tune to " << tune << std::endl;
 
-  // TODO: Add possibility to save in other formats
   // Creates the TTree output
   TFile file("tree.root", "RECREATE");
   TTree tree("event", "event");
 
-  analysis::ReducedEvent event;
+  container::ReducedEvent event;
   tree.Branch("event", &event);
 
   // Set up Pythia
   Pythia8::Pythia pythia;
-  pythia.readString("SoftQCD:all= on");  // Switch on "Minimum bias" process.
-  pythia.readString("Beams:eCM = 13000."); //Energy
-  pythia.readString("Random:setSeed = on"); 
+  pythia.readString("SoftQCD:all= on");
+  pythia.readString("Beams:eCM = 13000.");
+  pythia.readString("Random:setSeed = on");
   pythia.readString("Random:seed = " + std::to_string(seed));
   pythia.init();
 
   for (int i_event(0); i_event < n_events; ++i_event) {
-    pythia.next();  // Generates a events
+    pythia.next();
 
     auto particle_kine = filter::FilterKinematics(pythia.event);
 
     auto d0 = filter::FilterParticles(pythia.event, particle_kine, {421});
-    std::vector<analysis::ReducedParticle> reduced_d0;
+    std::vector<container::ReducedParticle> reduced_d0;
 
     for (auto i : d0) {
-      auto part = analysis::ReducedParticle(i, pythia.event);
-      reduced_d0.push_back(part);
+      const auto& part = pythia.event[i];
+
+      auto red_part = container::ReducedParticle(
+          part.pT(), part.pz(), part.phi(), part.eta(), part.index(), part.id(),
+          analysis::CheckOrigin(pythia.event, part.index()));
+
+      reduced_d0.push_back(red_part);
     }
 
-    event = analysis::ReducedEvent(pythia.event, reduced_d0);
+    event = container::ReducedEvent(
+        int(analysis::ClassifyHFProcess(pythia.event)), reduced_d0);
     tree.Fill();
   }
 
   tree.Print();
-
   file.Write();
-  // pythia.stat();
+
   return 0;
 }
 
 void ConfigureFromInput(std::vector<std::string> arguments, int& seed,
                         int& n_events, int& tune) {
   seed = 13;
-  n_events = 10;
+  n_events = 100;
   tune = -1;
 
   switch (arguments.size()) {
